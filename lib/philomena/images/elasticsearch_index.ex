@@ -1,4 +1,5 @@
 defmodule Philomena.Images.ElasticsearchIndex do
+  use Timex
   @behaviour Philomena.ElasticsearchIndex
 
   @impl true
@@ -66,7 +67,7 @@ defmodule Philomena.Images.ElasticsearchIndex do
           upvotes: %{type: "integer"},
           user_id: %{type: "keyword"},
           width: %{type: "integer"},
-          wilson_score: %{type: "float"},
+          romulus_score: %{type: "float"},
           galleries: %{
             type: "nested",
             properties: %{
@@ -102,7 +103,7 @@ defmodule Philomena.Images.ElasticsearchIndex do
       duration: image.image_duration,
       tag_count: length(image.tags),
       aspect_ratio: image.image_aspect_ratio,
-      wilson_score: wilson_score(image),
+      romulus_score: romulus_score(image),
       created_at: image.created_at,
       updated_at: image.updated_at,
       first_seen_at: image.first_seen_at,
@@ -175,20 +176,11 @@ defmodule Philomena.Images.ElasticsearchIndex do
     }
   end
 
-  def wilson_score(%{upvotes_count: upvotes, downvotes_count: downvotes}) when upvotes > 0 do
-    # Population size
-    n = (upvotes + downvotes) / 1
+  def romulus_score(%{score: score, created_at: created}) when Timex.diff(now(), created, :hours) > 1 do
+    hours = Timex.diff(now(), created, :hours)
 
-    # Success proportion
-    p_hat = upvotes / n
-
-    # z and z^2 values for CI upper 99.5%
-    z = 2.57583
-    z2 = 6.634900189
-
-    (p_hat + z2 / (2 * n) - z * :math.sqrt((p_hat * (1 - p_hat) + z2 / (4 * n)) / n)) /
-      (1 + z2 / n)
+    (upvotes + 1) / :math.log(hours + 1)
   end
 
-  def wilson_score(_), do: 0
+  def romulus_score(_), do: 0
 end

@@ -13,7 +13,7 @@ defmodule PhilomenaWeb.ImageSorter do
     score
     comment_count
     tag_count
-    wilson_score
+    romulus_score
     pixels
     size
     duration

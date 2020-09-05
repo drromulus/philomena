@@ -69,6 +69,7 @@ defmodule Philomena.MixProject do
       {:exq, "~> 0.13"},
       {:vapor, "~> 0.8.0"},
       {:dialyxir, "~> 1.0", only: :dev, runtime: false}
+      {:timex, "~> 3.5"}
     ]
   end
 
