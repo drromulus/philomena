@@ -176,6 +176,7 @@ defmodule Philomena.Images.ElasticsearchIndex do
   end
 
   def romulus_score(%{score: score, created_at: created}) when NaiveDateTime.diff(NaiveDateTime.utc_now(), created, :second) *3600 > 1 do
+    #convert to hours
     hours = NaiveDateTime.diff(NaiveDateTime.utc_now(), created, :second) * 3600
 
     (score + 1) / :math.log(hours + 1)
