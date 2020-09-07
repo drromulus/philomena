@@ -1,5 +1,4 @@
 defmodule Philomena.Images.ElasticsearchIndex do
-  use Timex
   @behaviour Philomena.ElasticsearchIndex
 
   @impl true
@@ -176,10 +175,10 @@ defmodule Philomena.Images.ElasticsearchIndex do
     }
   end
 
-  def romulus_score(%{score: score, created_at: created}) when Timex.diff(now(), created, :hours) > 1 do
-    hours = Timex.diff(now(), created, :hours)
+  def romulus_score(%{score: score, created_at: created}) when NaiveDateTime.diff(NaiveDateTime.utc_now(), created, :second) *3600 > 1 do
+    hours = NaiveDateTime.diff(NaiveDateTime.utc_now(), created, :second) * 3600
 
-    (upvotes + 1) / :math.log(hours + 1)
+    (score + 1) / :math.log(hours + 1)
   end
 
   def romulus_score(_), do: 0
